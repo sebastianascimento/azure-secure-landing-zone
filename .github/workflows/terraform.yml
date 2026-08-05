@@ -1,0 +1,118 @@
+name: Terraform Security Pipeline
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  securepipeline-audit:
+    name: SecurePipeline Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Landing Zone
+        uses: actions/checkout@v4
+
+      - name: Checkout SecurePipeline
+        uses: actions/checkout@v4
+        with:
+          repository: sebastianascimento/securepipeline
+          path: securepipeline-tool
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install SecurePipeline
+        run: pip install -r securepipeline-tool/src/requirements.txt
+
+      - name: Run SecurePipeline
+        run: |
+          cd securepipeline-tool/src
+          python cli.py --repo ../../infra --json > scan_results.json || true
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: securepipeline-audit
+          path: securepipeline-tool/src/scan_results.json
+
+  security-scan:
+    name: SAST — Security Scan
+    runs-on: ubuntu-latest
+    needs: securepipeline-audit
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infra/
+          framework: terraform
+          soft_fail: true
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: infra/
+          soft_fail: true
+
+  validate:
+    name: Terraform Validate & Format
+    runs-on: ubuntu-latest
+    needs: security-scan
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        working-directory: infra/
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+        working-directory: infra/
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: infra/
+
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (sem backend)
+        run: terraform init -backend=false
+        working-directory: infra/
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: infra/
+
+      # OIDC configurado para ambiente enterprise
+      # Requer App Registration com Federated Credential
+      # Documentação: docs/architecture.md
+      # - name: Login to Azure via OIDC
+      #   uses: azure/login@v1
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: Terraform Plan
+      #   run: terraform plan
+      #   working-directory: infra/
