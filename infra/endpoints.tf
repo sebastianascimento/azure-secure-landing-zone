@@ -1,5 +1,5 @@
 
-Storage Account — vive na subnet privada
+# Storage Account — vive na subnet privada
 resource "azurerm_storage_account" "main" {
   name                     = "seclzsebastorage"
   resource_group_name      = azurerm_resource_group.main.name
@@ -16,7 +16,7 @@ resource "azurerm_storage_account" "main" {
   }
 }
 
-Key Vault — vive na subnet privada
+# Key Vault — vive na subnet privada
 resource "azurerm_key_vault" "main" {
   name                = "seclz-seba-kv"
   resource_group_name = azurerm_resource_group.main.name
@@ -40,7 +40,7 @@ resource "azurerm_key_vault" "main" {
   }
 }
 
-Private Endpoint — Storage Account
+# Private Endpoint — Storage Account
 resource "azurerm_private_endpoint" "storage" {
   name                = "storage-private-endpoint"
   location            = azurerm_resource_group.main.location
@@ -60,7 +60,7 @@ resource "azurerm_private_endpoint" "storage" {
   }
 }
 
-Private Endpoint — Key Vault
+# Private Endpoint — Key Vault
 resource "azurerm_private_endpoint" "keyvault" {
   name                = "keyvault-private-endpoint"
   location            = azurerm_resource_group.main.location
@@ -80,7 +80,7 @@ resource "azurerm_private_endpoint" "keyvault" {
   }
 }
 
-Private DNS Zone — Storage
+# Private DNS Zone — Storage
 resource "azurerm_private_dns_zone" "storage" {
   name                = "privatelink.blob.core.windows.net"
   resource_group_name = azurerm_resource_group.main.name
@@ -91,7 +91,7 @@ resource "azurerm_private_dns_zone" "storage" {
   }
 }
 
-Private DNS Zone — Key Vault
+# Private DNS Zone — Key Vault
 resource "azurerm_private_dns_zone" "keyvault" {
   name                = "privatelink.vaultcore.azure.net"
   resource_group_name = azurerm_resource_group.main.name
@@ -102,7 +102,7 @@ resource "azurerm_private_dns_zone" "keyvault" {
   }
 }
 
-Liga DNS Zone à VNet — Storage
+# Liga DNS Zone à VNet — Storage
 resource "azurerm_private_dns_zone_virtual_network_link" "storage" {
   name                  = "storage-dns-link"
   resource_group_name   = azurerm_resource_group.main.name
@@ -115,7 +115,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "storage" {
   }
 }
 
-Liga DNS Zone à VNet — Key Vault
+# Liga DNS Zone à VNet — Key Vault
 resource "azurerm_private_dns_zone_virtual_network_link" "keyvault" {
   name                  = "keyvault-dns-link"
   resource_group_name   = azurerm_resource_group.main.name

@@ -41,3 +41,15 @@ variable "data_subnet_prefix" {
   type        = string
   default     = "10.0.2.0/24"
 }
+
+
+variable "tenant_domain" {
+  description = "Domain do tenant Azure (ex: sebastianascimento.onmicrosoft.com)"
+  type        = string
+}
+
+variable "test_user_password" {
+  description = "Password dos utilizadores de teste"
+  type        = string
+  sensitive   = true
+}

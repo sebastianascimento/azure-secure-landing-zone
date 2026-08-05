@@ -1,6 +1,6 @@
 
 
- Bloqueia Storage Accounts públicos
+# Bloqueia Storage Accounts públicos
 resource "azurerm_resource_group_policy_assignment" "no_public_storage" {
   name                 = "deny-public-storage"
   resource_group_id    = azurerm_resource_group.main.id
@@ -11,7 +11,7 @@ resource "azurerm_resource_group_policy_assignment" "no_public_storage" {
 
 
 
-Obriga a tag Project em todos os recursos
+# Obriga a tag Project em todos os recursos
 resource "azurerm_resource_group_policy_assignment" "require_project_tag" {
   name                 = "require-project-tag"
   resource_group_id    = azurerm_resource_group.main.id
@@ -27,7 +27,7 @@ resource "azurerm_resource_group_policy_assignment" "require_project_tag" {
 }
 
 
-Bloqueia regiões não permitidas
+# Bloqueia regiões não permitidas
 resource "azurerm_resource_group_policy_assignment" "allowed_locations" {
   name                 = "allowed-locations"
   resource_group_id    = azurerm_resource_group.main.id
