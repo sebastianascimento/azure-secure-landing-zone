@@ -104,7 +104,7 @@ jobs:
         run: terraform validate
         working-directory: infra/
 
-      # OIDC configurado para ambiente enterprise
+      # OIDC 
       # Requer App Registration com Federated Credential
       # Documentação: docs/architecture.md
       # - name: Login to Azure via OIDC

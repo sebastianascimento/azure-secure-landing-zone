@@ -37,7 +37,7 @@ resource "azurerm_network_security_group" "app" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
-# Permite HTTPS
+  # Permite HTTPS
   security_rule {
     name                       = "Allow-HTTPS-Inbound"
     priority                   = 100
@@ -50,7 +50,7 @@ resource "azurerm_network_security_group" "app" {
     destination_address_prefix = "*"
   }
 
-# Permite HTTP (para redirect para HTTPS)
+  # Permite HTTP (para redirect para HTTPS)
   security_rule {
     name                       = "Allow-HTTP-Inbound"
     priority                   = 110
@@ -63,7 +63,7 @@ resource "azurerm_network_security_group" "app" {
     destination_address_prefix = "*"
   }
 
-# Bloqueia todo o resto
+  # Bloqueia todo o resto
   security_rule {
     name                       = "Deny-All-Inbound"
     priority                   = 200
@@ -88,7 +88,7 @@ resource "azurerm_network_security_group" "data" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
-# Só permite tráfego da subnet da aplicação
+  # Só permite tráfego da subnet da aplicação
   security_rule {
     name                       = "Allow-App-Subnet-Only"
     priority                   = 100
@@ -101,7 +101,7 @@ resource "azurerm_network_security_group" "data" {
     destination_address_prefix = "*"
   }
 
-# Bloqueia internet completamente
+  # Bloqueia internet completamente
   security_rule {
     name                       = "Deny-Internet-Inbound"
     priority                   = 200

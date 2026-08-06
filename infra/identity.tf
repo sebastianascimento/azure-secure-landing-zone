@@ -1,17 +1,17 @@
 
 
 resource "azuread_user" "developer" {
-  user_principal_name = "user-dev@${var.tenant_domain}"
-  display_name        = "Developer Test"
-  password            = var.test_user_password
+  user_principal_name   = "user-dev@${var.tenant_domain}"
+  display_name          = "Developer Test"
+  password              = var.test_user_password
   force_password_change = false
 }
 
 
 resource "azuread_user" "secadmin" {
-  user_principal_name = "user-secadmin@${var.tenant_domain}"
-  display_name        = "Security Admin Test"
-  password            = var.test_user_password
+  user_principal_name   = "user-secadmin@${var.tenant_domain}"
+  display_name          = "Security Admin Test"
+  password              = var.test_user_password
   force_password_change = false
 }
 
@@ -80,7 +80,7 @@ resource "azurerm_role_assignment" "app_storage" {
 
 resource "azuread_conditional_access_policy" "mfa_location" {
   display_name = "ZeroTrust-RequireMFA-Outside-PT"
-  state        = "enabledForReportingButNotEnforced"  # ← Report-only primeiro
+  state        = "enabledForReportingButNotEnforced" # ← Report-only primeiro
 
   conditions {
     client_app_types = ["all"]
