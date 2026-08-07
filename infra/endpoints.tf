@@ -5,10 +5,35 @@ resource "azurerm_storage_account" "main" {
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_replication_type = "GRS"
 
-  # Bloqueia todo o acesso público
-  public_network_access_enabled = false
+  # Bloqueia acesso público
+  public_network_access_enabled   = false
+  allow_nested_items_to_be_public = false
+
+  # Directivas do Checkov
+  #checkov:skip=CKV2_AZURE_1: Usando chaves geridas pela Microsoft (MMK) por eficiencia de custos em dev/lab.
+  #checkov:skip=CKV_AZURE_33: O servico de Queue Storage nao e utilizado nesta arquitetura.
+
+  # TLS mais recente
+  min_tls_version = "TLS1_2"
+
+  # Desativa Shared Key usa só Entra ID
+  shared_access_key_enabled = false
+
+  sas_policy {
+    expiration_period = "90.00:00:00"
+  }
+
+  # Soft delete para blobs e containers
+  blob_properties {
+    delete_retention_policy {
+      days = 7
+    }
+    container_delete_retention_policy {
+      days = 7
+    }
+  }
 
   tags = {
     Project     = var.project_name
@@ -26,6 +51,16 @@ resource "azurerm_key_vault" "main" {
 
   # Bloqueia acesso público
   public_network_access_enabled = false
+
+  # Recuperação e proteção contra eliminação acidental
+  soft_delete_retention_days = 7
+  purge_protection_enabled   = true
+
+  # Firewall — só permite acesso via Private Endpoint
+  network_acls {
+    default_action = "Deny"
+    bypass         = "AzureServices"
+  }
 
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
@@ -59,6 +94,8 @@ resource "azurerm_private_endpoint" "storage" {
     Environment = var.environment
   }
 }
+
+
 
 # Private Endpoint — Key Vault
 resource "azurerm_private_endpoint" "keyvault" {
