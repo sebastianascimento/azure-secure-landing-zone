@@ -11,7 +11,7 @@ resource "azurerm_storage_account" "main" {
   public_network_access_enabled   = false
   allow_nested_items_to_be_public = false
 
-
+  # Directivas do Checkov
   #checkov:skip=CKV2_AZURE_1: Usando chaves geridas pela Microsoft (MMK) por eficiencia de custos em dev/lab.
   #checkov:skip=CKV_AZURE_33: O servico de Queue Storage nao e utilizado nesta arquitetura.
 
@@ -25,17 +25,13 @@ resource "azurerm_storage_account" "main" {
     expiration_period = "90.00:00:00"
   }
 
-  # Soft delete para blobs
+  # Soft delete para blobs e containers
   blob_properties {
     delete_retention_policy {
       days = 7
     }
-    logging {
-      delete                = true
-      read                  = true
-      write                 = true
-      version               = "1.0"
-      retention_policy_days = 7
+    container_delete_retention_policy {
+      days = 7
     }
   }
 
@@ -98,6 +94,8 @@ resource "azurerm_private_endpoint" "storage" {
     Environment = var.environment
   }
 }
+
+
 
 # Private Endpoint — Key Vault
 resource "azurerm_private_endpoint" "keyvault" {

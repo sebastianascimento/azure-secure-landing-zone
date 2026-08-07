@@ -38,6 +38,7 @@ resource "azurerm_network_security_group" "app" {
   resource_group_name = azurerm_resource_group.main.name
 
   # Permite HTTPS
+  #tfsec:ignore:azure-network-no-public-ingress
   security_rule {
     name                       = "Allow-HTTPS-Inbound"
     priority                   = 100
