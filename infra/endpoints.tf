@@ -11,6 +11,10 @@ resource "azurerm_storage_account" "main" {
   public_network_access_enabled   = false
   allow_nested_items_to_be_public = false
 
+
+  #checkov:skip=CKV2_AZURE_1: Usando chaves geridas pela Microsoft (MMK) por eficiencia de custos em dev/lab.
+  #checkov:skip=CKV_AZURE_33: O servico de Queue Storage nao e utilizado nesta arquitetura.
+
   # TLS mais recente
   min_tls_version = "TLS1_2"
 
