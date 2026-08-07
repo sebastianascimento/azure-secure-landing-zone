@@ -5,27 +5,31 @@ resource "azurerm_storage_account" "main" {
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_replication_type = "GRS"
 
   # Bloqueia acesso público
   public_network_access_enabled   = false
-  allow_nested_items_to_be_public = false  
+  allow_nested_items_to_be_public = false
 
   # TLS mais recente
-  min_tls_version = "TLS1_2"              
+  min_tls_version = "TLS1_2"
 
   # Desativa Shared Key usa só Entra ID
-  shared_access_key_enabled = false       
+  shared_access_key_enabled = false
+
+  sas_policy {
+    expiration_period = "90.00:00:00"
+  }
 
   # Soft delete para blobs
   blob_properties {
     delete_retention_policy {
-      days = 7                            
+      days = 7
     }
     logging {
       delete                = true
       read                  = true
-      write                 = true        
+      write                 = true
       version               = "1.0"
       retention_policy_days = 7
     }
@@ -49,12 +53,12 @@ resource "azurerm_key_vault" "main" {
   public_network_access_enabled = false
 
   # Recuperação e proteção contra eliminação acidental
-  soft_delete_retention_days = 7        
-  purge_protection_enabled   = true     
+  soft_delete_retention_days = 7
+  purge_protection_enabled   = true
 
   # Firewall — só permite acesso via Private Endpoint
   network_acls {
-    default_action = "Deny"             
+    default_action = "Deny"
     bypass         = "AzureServices"
   }
 
